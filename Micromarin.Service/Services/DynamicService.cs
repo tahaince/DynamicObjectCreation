@@ -78,8 +78,8 @@ public class DynamicService(MicromarinDbContext context) : IDynamicService {
             var dynamicEntity = await _context.DynamicEntities.FindAsync(dynamicUpdate.Id)
                 ?? throw new KeyNotFoundException($"Entity with id {dynamicUpdate.Id} not found");
 
-            dynamicEntity.Data = dynamicUpdate.Data;
-            dynamicEntity.Type = dynamicUpdate.Type;
+            dynamicEntity.Data = dynamicUpdate.Data ?? dynamicEntity.Data;
+            dynamicEntity.Type = dynamicUpdate.Type ?? dynamicEntity.Type;
             await _context.SaveChangesAsync();
 
             return dynamicEntity;
@@ -99,8 +99,8 @@ public class DynamicService(MicromarinDbContext context) : IDynamicService {
                 return await CreateDynamicObjectAsync(new DynamicCommand { Data = dynamicUpsert.Data, Type = dynamicUpsert.Type });
             }
             else {
-                dynamicEntity.Data = dynamicUpsert.Data;
-                dynamicEntity.Type = dynamicUpsert.Type;
+                dynamicEntity.Data = dynamicUpsert.Data ?? dynamicEntity.Data;
+                dynamicEntity.Type = dynamicUpsert.Type ?? dynamicEntity.Type;
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
                 //Update method is not needed here because the entity is already being tracked by the context
